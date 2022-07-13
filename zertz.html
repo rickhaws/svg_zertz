@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color:powderblue;">
+
+<svg width="600" height="500">
+    <circle id="c0" cx="100" cy="50" r="40"
+            stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c1" cx="100" cy="50" r="40"
+            stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c2" cx="100" cy="50" r="40"
+            stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c3" cx="100" cy="50" r="40"
+            stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c4" cx="100" cy="50" r="40"
+            stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c5" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c6" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c7" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c8" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c9" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c10" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c11" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c12" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c13" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c14" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c15" cx="100" cy="50" r="40"15
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c16" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c17" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c18" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c19" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c20" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c21" cx="100" cy="50" r="40"
+        stroke="black"     stroke-width="12" fill="yellow" />
+    <circle id="c22" cx="100" cy="50" r="40"
+        stroke="black" stroke-width="12" fill="yellow" />
+    <circle id="c23" cx="100" cy="50" r="40"
+            stroke="black" stroke-width="12" fill="yellow" />
+Sorry, your browser does not support inline SVG.
+</svg>
+
+<div id="output">Debug </div>
+
+<script>
+    var elements=[];
+    var xInit=50;
+    var x=50;
+    var xInc=100;
+    var y=50;
+    var yInc=100;
+    var rowLengths=[4, 5, 6, 5, 4];
+    var numCircles = rowLengths.reduce((sum, x) => sum+x);
+    var maxLength = Math.max(...rowLengths);
+
+    var output = document.getElementById("output");
+    const logIt = (msg) => {
+        output.innerHTML += msg + "<br/>"
+    }
+    logIt("Messages:");
+
+    for (var i=0; i<numCircles; i++) {
+        elements[i] = document.getElementById(`c${i}`);
+    }
+
+    var i = 0;
+    for (var row=0; row<rowLengths.length; row++) {
+        y = 50 + yInc*row;
+        xInit = 50 + xInc * Math.abs(maxLength - rowLengths[row])/2; // integer division used to offset odd rows
+        for (var position=0; position<rowLengths[row]; position++) {
+            x = xInit + position * xInc;
+            elements[i].setAttribute("cx", `${x}`);
+            elements[i].setAttribute("cy", `${y}`);
+            i++;
+        }
+    }
+
+    const clearFill = (element) => element.setAttribute("fill-opacity", "0");
+    const fillElement = (element, color) => {
+        element.setAttribute("fill-opacity", "1.0");
+        element.setAttribute("fill", color);
+    }
+    const fillWhite = (element) => fillElement(element, "white");
+    const fillGrey = (element) => fillElement(element, "lightgrey");
+    const fillBlack = (element) => fillElement(element, "black");
+
+    const clearRing = (element) => element.setAttribute("stroke-opacity", "0");
+    const colorRing = (element, color) => {
+        element.setAttribute("stroke-opacity", "1.0");
+        element.setAttribute("stroke", color);
+    }
+    const showRing = (element) => colorRing(element, "slategrey");
+
+    // Tests
+    logIt("Beginning tests...");
+    clearFill(elements[0]);
+    fillElement(elements[1], "red");
+    fillWhite(elements[2]);
+    fillGrey(elements[3]);
+    fillBlack(elements[4]);
+
+    clearRing(elements[5]);
+    colorRing(elements[6], "green");
+    clearRing(elements[8]);
+    showRing(elements[8]);
+    fillGrey(elements[8]);
+    
+</script>
+ 
+</body>
+</html>
+
