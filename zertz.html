@@ -5,7 +5,7 @@
 <table>
 <tr>
     <td>
-        <svg width="700" height="700">
+        <svg id="board" width="700" height="700">
             <circle id="c0" cx="100" cy="50" r="40" /> <circle id="c1" cx="100" cy="50" r="40" /> <circle id="c2" cx="100" cy="50" r="40" />
             <circle id="c3" cx="100" cy="50" r="40" /> <circle id="c4" cx="100" cy="50" r="40" /> <circle id="c5" cx="100" cy="50" r="40" />
             <circle id="c6" cx="100" cy="50" r="40" /> <circle id="c7" cx="100" cy="50" r="40" /> <circle id="c8" cx="100" cy="50" r="40" />
@@ -51,23 +51,17 @@
 <script >
     // --------------------------- UTILITIES---------------------------------
     // Set up log
-    var output = document.getElementById("output");
-    const logAppend = (msg) => { }//output.innerHTML += msg; }
+    const output = document.getElementById("output");
+
+    const logAppend = (msg) => { } // Turn off logging
+    // const logAppend = (msg) => { output.innerHTML += msg; } // Turn on logging
+
     const logLine = (msg) => logAppend(msg + "<br/>");
     logLine("Messages:");
 
     //--------------------------- SVG CONTROL -------------------------------
+    const ringThickness = 12;
     var elements=[];
-    var ringThickness = 12;
-    var xInit=50;
-    var x=50;
-    var xInc=100;
-    var y=50;
-    var yInc=87;
-    var rowLengths=[4, 5, 6, 7, 6, 5, 4];
-    var numBoardPositions = rowLengths.reduce((sum, x) => sum+x);
-    const numCircles = 99;
-    var maxLength = Math.max(...rowLengths);
 
     // -- Functions -- //
     const clearFill = (element) => element.setAttribute("fill-opacity", "0");
@@ -101,8 +95,36 @@
     const showRing = (element) => colorRing(element, "slategrey");
     logLine('Function showRing defined');
 
-    // Collect circle elements
+    const setCenter = (element, x, y) => {
+        logAppend(`Moving ring ${element.id} to (${x}, ${y})... `)
+        element.setAttribute("cx", `${x}`);
+        element.setAttribute("cy", `${y}`);
+        logLine(' done')
+    }
+    logLine('Function setCenter defined');
+
     const svgInit = () => {
+        const xInc=100;
+        const yInc=87;
+        const rowLengths=[4, 5, 6, 7, 6, 5, 4];
+        const ballColors = ["white", "grey", "black"]
+        const ballCounts = [6, 8, 10];
+        const numCircles = 99;
+        var xInit=50;
+        var x=xInit;
+        var y=x;
+        var numRows = rowLengths.length;
+        var maxRowLength = Math.max(...rowLengths);
+        var numBoardPositions = rowLengths.reduce((sum, x) => sum+x);
+        var board = document.getElementById("board");
+
+        logLine(`Setting board size`);
+        board.setAttribute("width", `${Math.max(...ballCounts, maxRowLength)*xInc}`);
+        board.setAttribute("height", `${(5+numRows) * yInc}`);
+        // board.setAttribute("width", `${xInit + xInc*maxRowLength + xinc}`);
+        // board.setAttribute("height", `${y + yInc*(numRows + 5) + xinc}`);
+
+        // Collect circle elements
         logAppend(`Finding circle elements:`);
         for (var i=0; i < numCircles; i++) {
             logAppend(`c${i}?`);
@@ -113,19 +135,36 @@
         logLine(`Found ${elements.length} circle elements`);
 
         // Place circles on board
+        logLine(`Placing circles`);
         var i = 0;
-        for (var row=0; row<rowLengths.length; row++) {
+        for (var row=0; row<numRows; row++) {
+            logAppend(`Row ${row}: `);
             y = 50 + yInc*row;
-            xInit = 50 + xInc * Math.abs(maxLength - rowLengths[row])/2; // integer division used to offset odd rows
-            logLine(`Row ${row}: xInit=${xInit}, y=${y}`);
+            xInit = 50 + xInc * Math.abs(maxRowLength - rowLengths[row])/2; // integer division used to offset odd rows
+            logLine(`xInit=${xInit}, y=${y}`);
             for (var position=0; position<rowLengths[row]; position++) {
                 x = xInit + position * xInc;
                 logLine(`   Position ${position}: x=${x}`);
-                elements[i].setAttribute("cx", `${x}`);
-                elements[i].setAttribute("cy", `${y}`);
+                setCenter(elements[i], x, y);
                 showRing(elements[i]);
+                clearFill(elements[i]);
                 i++;
             }
+        }
+
+        logLine(`Placing spare balls`);
+        y = (numRows + 2) * yInc;
+        for (var b = 0; b < ballCounts.length; b++){
+            x = 50;
+            for (var j = 0; j < ballCounts[b]; j++) {
+                logLine(`   Ball ${j} (c${i}): (${x}, ${y})`);
+                setCenter(elements[i], x, y);
+                clearRing(elements[i]);
+                fillElement(elements[i], ballColors[b]);
+                x += xInc;
+                i++;
+            }
+            y += yInc;
         }
 
         // Hide other circles
@@ -153,11 +192,13 @@
         clearRing(elements[8]);
         showRing(elements[8]);
         fillGrey(elements[8]);
+
+        setCenter(elements[9], 0, 0);
     }
 
     // -------------------------- MAIN --------------------------------------
     svgInit();
-    runTests();
+    // runTests();
 
 </script>
 </body>
