@@ -47,7 +47,16 @@
     </td>
 </tr>
 </table>
-<script>
+
+<script >
+    // --------------------------- UTILITIES---------------------------------
+    // Set up log
+    var output = document.getElementById("output");
+    const logAppend = (msg) => { }//output.innerHTML += msg; }
+    const logLine = (msg) => logAppend(msg + "<br/>");
+    logLine("Messages:");
+
+    //--------------------------- SVG CONTROL -------------------------------
     var elements=[];
     var ringThickness = 12;
     var xInit=50;
@@ -59,12 +68,6 @@
     var numBoardPositions = rowLengths.reduce((sum, x) => sum+x);
     const numCircles = 99;
     var maxLength = Math.max(...rowLengths);
-
-    // Set up log
-    var output = document.getElementById("output");
-    const logAppend = (msg) => { }//output.innerHTML += msg; }
-    const logLine = (msg) => logAppend(msg + "<br/>");
-    logLine("Messages:");
 
     // -- Functions -- //
     const clearFill = (element) => element.setAttribute("fill-opacity", "0");
@@ -98,59 +101,65 @@
     const showRing = (element) => colorRing(element, "slategrey");
     logLine('Function showRing defined');
 
-    // -- Main -- //
-
     // Collect circle elements
-    logAppend(`Finding circle elements:`);
-    for (var i=0; i < numCircles; i++) {
-        logAppend(`c${i}?`);
-        elements[i] = document.getElementById(`c${i}`);
-        logAppend('!, ');
-    }
-    logLine('');
-    logLine(`Found ${elements.length} circle elements`);
-
-    // Place circles on board
-    var i = 0;
-    for (var row=0; row<rowLengths.length; row++) {
-        y = 50 + yInc*row;
-        xInit = 50 + xInc * Math.abs(maxLength - rowLengths[row])/2; // integer division used to offset odd rows
-        logLine(`Row ${row}: xInit=${xInit}, y=${y}`);
-        for (var position=0; position<rowLengths[row]; position++) {
-            x = xInit + position * xInc;
-            logLine(`   Position ${position}: x=${x}`);
-            elements[i].setAttribute("cx", `${x}`);
-            elements[i].setAttribute("cy", `${y}`);
-            showRing(elements[i]);
-            i++;
+    const svgInit = () => {
+        logAppend(`Finding circle elements:`);
+        for (var i=0; i < numCircles; i++) {
+            logAppend(`c${i}?`);
+            elements[i] = document.getElementById(`c${i}`);
+            logAppend('!, ');
         }
+        logLine('');
+        logLine(`Found ${elements.length} circle elements`);
+
+        // Place circles on board
+        var i = 0;
+        for (var row=0; row<rowLengths.length; row++) {
+            y = 50 + yInc*row;
+            xInit = 50 + xInc * Math.abs(maxLength - rowLengths[row])/2; // integer division used to offset odd rows
+            logLine(`Row ${row}: xInit=${xInit}, y=${y}`);
+            for (var position=0; position<rowLengths[row]; position++) {
+                x = xInit + position * xInc;
+                logLine(`   Position ${position}: x=${x}`);
+                elements[i].setAttribute("cx", `${x}`);
+                elements[i].setAttribute("cy", `${y}`);
+                showRing(elements[i]);
+                i++;
+            }
+        }
+
+        // Hide other circles
+        logAppend(`Hiding circles: `);
+        for (; i < numCircles; i++) {
+            logAppend(`c${i}`);
+            clearRing(elements[i]);
+            clearFill(elements[i]);
+            logAppend(`!, `);
+        }
+        logLine('');
     }
 
-    // Hide other circles
-    logAppend(`Hiding circles: `);
-    for (; i < numCircles; i++) {
-        logAppend(`c${i}`);
-        clearRing(elements[i]);
-        clearFill(elements[i]);
-        logAppend(`!, `);
+    // -------------------------------- TESTS ------------------------------------
+    const runTests = () => {
+        logLine("Beginning tests...");
+        clearFill(elements[0]);
+        fillElement(elements[1], "red");
+        fillWhite(elements[2]);
+        fillGrey(elements[3]);
+        fillBlack(elements[4]);
+
+        clearRing(elements[5]);
+        colorRing(elements[6], "green");
+        clearRing(elements[8]);
+        showRing(elements[8]);
+        fillGrey(elements[8]);
     }
-    logLine('');
 
-    // Tests
-    logLine("Beginning tests...");
-    clearFill(elements[0]);
-    fillElement(elements[1], "red");
-    fillWhite(elements[2]);
-    fillGrey(elements[3]);
-    fillBlack(elements[4]);
+    // -------------------------- MAIN --------------------------------------
+    svgInit();
+    runTests();
 
-    clearRing(elements[5]);
-    colorRing(elements[6], "green");
-    clearRing(elements[8]);
-    showRing(elements[8]);
-    fillGrey(elements[8]);
 </script>
-
 </body>
 </html>
 
