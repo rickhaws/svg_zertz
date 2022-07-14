@@ -178,8 +178,14 @@
         logLine('');
     }
 
+    // Board: knows which SVG elements correspond to each board position and spare ball position
+    //        collection of balls
+    //          collection of rings
+    //          board positions
+    //          adjacencies
+
     // -------------------------------- TESTS ------------------------------------
-    const runTests = () => {
+    const runSvgTests = () => {
         logLine("Beginning tests...");
         clearFill(elements[0]);
         fillElement(elements[1], "red");
@@ -198,7 +204,7 @@
 
     // -------------------------- MAIN --------------------------------------
     svgInit();
-    // runTests();
+    // runSvgTests();
 
 </script>
 </body>
