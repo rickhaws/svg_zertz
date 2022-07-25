@@ -1,7 +1,7 @@
 Skip to content Sign up rickhaws / svg_zertz Public Code Issues Pull requests Actions Projects Wiki Security More svg_zertz/zertz.html Cannot retrieve contributors at this time 212 lines (187 sloc) 10.7 KB
 <!DOCTYPE html>
 <html>
-  <body style="background-color:powderblue;">
+  <body style="background-color:linen;">
     <table>
       <tr>
         <td>
@@ -115,10 +115,11 @@ Skip to content Sign up rickhaws / svg_zertz Public Code Issues Pull requests Ac
     <script>
     // ------------------------ BOARD DEFINITION CONSTANTS --------------------
     const rowLengths = [4, 5, 6, 7, 6, 5, 4];
-    const ballColors = ["white", "grey", "black"]
+    const ballColors = ["white", "lightslategrey", "darkslategrey"]
     const ballCounts = [6, 8, 10];
     const ringColor = "black";
-    const ringThickness = 25;
+    const ringThickness = 30;
+    const ringRadius = 50;
 
       // --------------------------- UTILITIES---------------------------------
       // Set up log
@@ -147,6 +148,7 @@ Skip to content Sign up rickhaws / svg_zertz Public Code Issues Pull requests Ac
             element.setAttribute("stroke", color);
             element.setAttribute("stroke-opacity", "1.0");
             element.setAttribute("stroke-width", `${ringThickness}`);
+            element.setAttribute("r", `${ringRadius - ringThickness/2}`);
             logLine(' done')
           }
           logLine('Function colorRing defined');
@@ -249,4 +251,4 @@ Skip to content Sign up rickhaws / svg_zertz Public Code Issues Pull requests Ac
           // runSvgTests();
     </script>
   </body>
-</html> Footer © 2022 GitHub, Inc. Footer navigation Terms Privacy Security Status Docs Contact GitHub Pricing API Training Blog About
+</html>
