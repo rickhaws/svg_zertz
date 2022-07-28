@@ -1,4 +1,3 @@
-Skip to content Sign up rickhaws / svg_zertz Public Code Issues Pull requests Actions Projects Wiki Security More svg_zertz/zertz.html Cannot retrieve contributors at this time 212 lines (187 sloc) 10.7 KB
 <!DOCTYPE html>
 <html>
   <body style="background-color:linen;">
@@ -113,142 +112,157 @@ Skip to content Sign up rickhaws / svg_zertz Public Code Issues Pull requests Ac
       </tr>
     </table>
     <script>
-    // ------------------------ BOARD DEFINITION CONSTANTS --------------------
-    const rowLengths = [4, 5, 6, 7, 6, 5, 4];
-    const ballColors = ["white", "lightslategrey", "darkslategrey"]
-    const ballCounts = [6, 8, 10];
-    const ringColor = "black";
-    const ringThickness = 30;
-    const ringRadius = 50;
+      // ------------------------ BOARD DEFINITION CONSTANTS --------------------
+      const rowLengths = [4, 5, 6, 7, 6, 5, 4];
+      const ballCounts = [6, 8, 10];
+      const ballColors = ["white", "lightslategrey", "darkslategrey"]
+      const ringColor = "black";
+      const ringRadius = 50;
+      const ringThickness = ringRadius / 2.0;
+      const ballRadius = 0.8 * ringRadius;
 
       // --------------------------- UTILITIES---------------------------------
       // Set up log
       const output = document.getElementById("output");
-      const logAppend = (msg) => {} // Turn off logging
-      // const logAppend = (msg) => { output.innerHTML += msg; } // Turn on logging
-      const logLine = (msg) => logAppend(msg + " < br / > ");
-          logLine("Messages:");
-          //--------------------------- SVG CONTROL -------------------------------
-          var elements = [];
-          // -- Functions -- //
-          const clearFill = (element) => element.setAttribute("fill-opacity", "0"); logLine(`Function clearFill defined`);
-          const fillElement = (element, color) => {
-            logAppend(`Filling ${element.id} with ${color}...`);
-            element.setAttribute("fill-opacity", "1.0");
-            element.setAttribute("fill", color);
-            logLine(' done')
+      var logAppend = (msg) => {} // Turn off logging
+      // logAppend = (msg) => { output.innerHTML += msg; } // Turn on logging
+      const logLine = (msg) => logAppend(msg + " <br /> ");
+      logLine("Messages:");
+      //--------------------------- SVG CONTROL -------------------------------
+      var elements = [];
+      // -- Functions -- //
+      const clearFill = (element) => element.setAttribute("fill-opacity", "0"); 
+      logLine(`Function clearFill defined`);
+      
+      const fillElement = (element, color) => {
+        logAppend(`Filling ${element.id} with ${color}...`);
+        element.setAttribute("fill-opacity", "1.0");
+        element.setAttribute("fill", color);
+        logLine(' done')
+      }
+      logLine(`Function fillElement defined`);
+
+      const fillWhite = (element) => fillElement(element, "white");
+      const fillGrey = (element) => fillElement(element, "lightgrey");
+      const fillBlack = (element) => fillElement(element, "black"); 
+      logLine('Functions defined for filling specific colors');
+
+      const clearRing = (element) => element.setAttribute("stroke-opacity", "0"); 
+      logLine('Function clearRing defined');
+
+      const colorRing = (element, color) => {
+        logAppend(`Setting ring ${element.id} to ${color}...`);
+        element.setAttribute("stroke", color);
+        element.setAttribute("stroke-opacity", "1.0");
+        element.setAttribute("stroke-width", ringThickness);
+        var circleRadius = ringRadius - ringThickness / 2;
+        logAppend(`r=${circleRadius}`);
+        element.setAttribute('r', `${circleRadius}`);
+        logLine(' done')
+      }
+      logLine('Function colorRing defined');
+
+      const showRing = (element) => colorRing(element, ringColor); 
+      logLine('Function showRing defined');
+
+      const setCenter = (element, x, y) => {
+        logAppend(`Moving ring ${element.id} to (${x}, ${y})... `)
+        element.setAttribute("cx", `${x}`);
+        element.setAttribute("cy", `${y}`);
+        logLine(' done')
+      }
+      logLine('Function setCenter defined');
+
+      const svgInit = () => {
+        const xInc = 2.0 * ringRadius;
+        const yInc = xInc * Math.sin(Math.PI/3.0);
+        const numCircles = 99;
+        var xInit = 50;
+        var x = xInit;
+        var y = x;
+        var numRows = rowLengths.length;
+        var maxRowLength = Math.max(...rowLengths);
+        var numBoardPositions = rowLengths.reduce((sum, x) => sum + x);
+        var board = document.getElementById("board");
+        logLine(`Setting board size`);
+        board.setAttribute("width", `${Math.max(...ballCounts, maxRowLength)*xInc}`);
+        board.setAttribute("height", `${(5+numRows) * yInc}`);
+        // board.setAttribute("width", `${xInit + xInc*maxRowLength + xinc}`);
+        // board.setAttribute("height", `${y + yInc*(numRows + 5) + xinc}`);
+        // Collect circle elements
+        logAppend(`Finding circle elements:`);
+        for (var i = 0; i < numCircles; i++) {
+          logAppend(`c${i}?`);
+          elements[i] = document.getElementById(`c${i}`);
+          logAppend('!, ');
+        }
+        logLine('');
+        logLine(`Found ${elements.length} circle elements`);
+        // Place circles on board
+        logLine(`Placing circles`);
+        var i = 0;
+        for (var row = 0; row < numRows; row++) {
+          logAppend(`Row ${row}: `);
+          y = 50 + yInc * row;
+          xInit = 50 + xInc * Math.abs(maxRowLength - rowLengths[row]) / 2; // integer division used to offset odd rows
+          logLine(`xInit=${xInit}, y=${y}`);
+          for (var position = 0; position < rowLengths[row]; position++) {
+            x = xInit + position * xInc;
+            logLine(`   Position ${position}: x=${x}`);
+            setCenter(elements[i], x, y);
+            showRing(elements[i]);
+            clearFill(elements[i]);
+            i++;
           }
-          logLine(`Function fillElement defined`);
-          const fillWhite = (element) => fillElement(element, "white");
-          const fillGrey = (element) => fillElement(element, "lightgrey");
-          const fillBlack = (element) => fillElement(element, "black"); logLine('Functions defined for filling specific colors');
-          const clearRing = (element) => element.setAttribute("stroke-opacity", "0"); logLine('Function clearRing defined');
-          const colorRing = (element, color) => {
-            logAppend(`Setting ring ${element.id} to ${color}...`);
-            element.setAttribute("stroke", color);
-            element.setAttribute("stroke-opacity", "1.0");
-            element.setAttribute("stroke-width", `${ringThickness}`);
-            element.setAttribute("r", `${ringRadius - ringThickness/2}`);
-            logLine(' done')
+        }
+        logLine(`Placing spare balls`);
+        y = (numRows + 2) * yInc;
+        for (var b = 0; b < ballCounts.length; b++) {
+          x = 50;
+          for (var j = 0; j < ballCounts[b]; j++) {
+            logLine(`   Ball ${j} (c${i}): (${x}, ${y})`);
+            setCenter(elements[i], x, y);
+            clearRing(elements[i]);
+            fillElement(elements[i], ballColors[b]);
+            x += 2 *ballRadius * 1.1;
+            i++;
           }
-          logLine('Function colorRing defined');
-          const showRing = (element) => colorRing(element, ringColor); logLine('Function showRing defined');
-          const setCenter = (element, x, y) => {
-            logAppend(`Moving ring ${element.id} to (${x}, ${y})... `)
-            element.setAttribute("cx", `${x}`);
-            element.setAttribute("cy", `${y}`);
-            logLine(' done')
-          }
-          logLine('Function setCenter defined');
-          const svgInit = () => {
-            const xInc = 100;
-            const yInc = 87;
-            const numCircles = 99;
-            var xInit = 50;
-            var x = xInit;
-            var y = x;
-            var numRows = rowLengths.length;
-            var maxRowLength = Math.max(...rowLengths);
-            var numBoardPositions = rowLengths.reduce((sum, x) => sum + x);
-            var board = document.getElementById("board");
-            logLine(`Setting board size`);
-            board.setAttribute("width", `${Math.max(...ballCounts, maxRowLength)*xInc}`);
-            board.setAttribute("height", `${(5+numRows) * yInc}`);
-            // board.setAttribute("width", `${xInit + xInc*maxRowLength + xinc}`);
-            // board.setAttribute("height", `${y + yInc*(numRows + 5) + xinc}`);
-            // Collect circle elements
-            logAppend(`Finding circle elements:`);
-            for (var i = 0; i < numCircles; i++) {
-              logAppend(`c${i}?`);
-              elements[i] = document.getElementById(`c${i}`);
-              logAppend('!, ');
-            }
-            logLine('');
-            logLine(`Found ${elements.length} circle elements`);
-            // Place circles on board
-            logLine(`Placing circles`);
-            var i = 0;
-            for (var row = 0; row < numRows; row++) {
-              logAppend(`Row ${row}: `);
-              y = 50 + yInc * row;
-              xInit = 50 + xInc * Math.abs(maxRowLength - rowLengths[row]) / 2; // integer division used to offset odd rows
-              logLine(`xInit=${xInit}, y=${y}`);
-              for (var position = 0; position < rowLengths[row]; position++) {
-                x = xInit + position * xInc;
-                logLine(`   Position ${position}: x=${x}`);
-                setCenter(elements[i], x, y);
-                showRing(elements[i]);
-                clearFill(elements[i]);
-                i++;
-              }
-            }
-            logLine(`Placing spare balls`);
-            y = (numRows + 2) * yInc;
-            for (var b = 0; b < ballCounts.length; b++) {
-              x = 50;
-              for (var j = 0; j < ballCounts[b]; j++) {
-                logLine(`   Ball ${j} (c${i}): (${x}, ${y})`);
-                setCenter(elements[i], x, y);
-                clearRing(elements[i]);
-                fillElement(elements[i], ballColors[b]);
-                x += xInc;
-                i++;
-              }
-              y += yInc;
-            }
-            // Hide other circles
-            logAppend(`Hiding circles: `);
-            for (; i < numCircles; i++) {
-              logAppend(`c${i}`);
-              clearRing(elements[i]);
-              clearFill(elements[i]);
-              logAppend(`!, `);
-            }
-            logLine('');
-          }
-          // Board: knows which SVG elements correspond to each board position and spare ball position
-          //        collection of balls
-          //          collection of rings
-          //          board positions
-          //          adjacencies
-          // -------------------------------- TESTS ------------------------------------
-          const runSvgTests = () => {
-            logLine("Beginning tests...");
-            clearFill(elements[0]);
-            fillElement(elements[1], "red");
-            fillWhite(elements[2]);
-            fillGrey(elements[3]);
-            fillBlack(elements[4]);
-            clearRing(elements[5]);
-            colorRing(elements[6], "green");
-            clearRing(elements[8]);
-            showRing(elements[8]);
-            fillGrey(elements[8]);
-            setCenter(elements[9], 0, 0);
-          }
-          // -------------------------- MAIN --------------------------------------
-          svgInit();
-          // runSvgTests();
+          y += yInc;
+        }
+        // Hide other circles
+        logAppend(`Hiding circles: `);
+        for (; i < numCircles; i++) {
+          logAppend(`c${i}`);
+          clearRing(elements[i]);
+          clearFill(elements[i]);
+          logAppend(`!, `);
+        }
+        logLine('');
+      }
+
+      // Board: knows which SVG elements correspond to each board position and spare ball position
+      //        collection of balls
+      //          collection of rings
+      //          board positions
+      //          adjacencies
+      // -------------------------------- TESTS ------------------------------------
+      const runSvgTests = () => {
+        logLine("Beginning tests...");
+        clearFill(elements[0]);
+        fillElement(elements[1], "red");
+        fillWhite(elements[2]);
+        fillGrey(elements[3]);
+        fillBlack(elements[4]);
+        clearRing(elements[5]);
+        colorRing(elements[6], "green");
+        clearRing(elements[8]);
+        showRing(elements[8]);
+        fillGrey(elements[8]);
+        setCenter(elements[9], 0, 0);
+      }
+      // -------------------------- MAIN --------------------------------------
+      svgInit();
+      // runSvgTests();
     </script>
   </body>
 </html>
